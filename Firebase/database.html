@@ -21,14 +21,33 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12  text-center">
+            <div class="col-12">
                 <h5>
-                    <a href="/auth.html">Autenticação</a>
+                    <a href="/index.html">Voltar</a>
                 </h5>
-                <br>
-                <h5>
-                    <a href="/database.html">Database</a>
-                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5">
+                <h3>Adicionar Usuários</h3>
+                <div class="form-group">
+                    <label for="nameInput">Nome</label>
+                    <input type="text" id="nameInput" placeholder="Nome" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="emailInput">E-mail</label>
+                    <input type="text" id="emailInput" placeholder="email" class="form-control">
+                </div>
+
+                <button id="submitButton" class="btn btn-block btn-primary">Adicionar</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mt-5">
+                <h3>Lista Usuários</h3>
+                <ul id="userList">
+                    <img src="css/firebaseload.gif" style="max-width: 230px;display: block;margin: 0 auto;" class="img-fluid" alt="Loader">
+                </ul>
             </div>
         </div>
     </div>
@@ -38,6 +57,7 @@
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/real-time-database.js"></script>
 </body>
 
 </html>
