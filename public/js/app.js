@@ -17,6 +17,8 @@ firebase.auth().useDeviceLanguage();
 
 var database = firebase.database().ref('Usuarios');
 
+var storage = firebase.app().storage("gs://my-custom-bucket");
+
 
 // Facebook API
 
