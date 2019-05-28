@@ -15,13 +15,14 @@ firebase.initializeApp(firebaseConfig);
 //Lang Firebase
 firebase.auth().useDeviceLanguage();
 
+// Initialize Database
 var database = firebase.database().ref('Usuarios');
 
-var storage = firebase.app().storage("gs://my-custom-bucket");
+// Initialize Storage
+var storage = firebase.app().storage("gs://jobdelas-62306.appspot.com");
 
 
 // Facebook API
-
 window.fbAsyncInit = function() {
   FB.init({
     appId      : '2274892702602996',
@@ -33,7 +34,6 @@ window.fbAsyncInit = function() {
   FB.AppEvents.logPageView();   
     
 };
-
 (function(d, s, id){
    var js, fjs = d.getElementsByTagName(s)[0];
    if (d.getElementById(id)) {return;}
