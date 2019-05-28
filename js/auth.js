@@ -7,12 +7,7 @@ var createUser = $('#createUser');
 var authUser = $('#authUser');
 var signOutUser = $('#signOutUser');
 
-var authGithub = $('#authGithub');
-var authGoogle = $('#authGoogle');
 var authFacebook = $('#authFacebook');
-var authTwitter = $('#authTwitter');
-var authTwitter = $('#authTwitter');
-var authAnonimo = $('#authAnonimo');
 
 //Dispalys
 var displayName = $('#displayName');
@@ -34,7 +29,7 @@ createUser.on('click', ()=>{
     console.log(errorMessage);
     // ...
   });
-})
+});
 
 //auth user instance
 authUser.on('click', ()=>{
@@ -52,7 +47,7 @@ authUser.on('click', ()=>{
     console.log(errorMessage);
     // ...
   });
-})
+});
 
 //auth logout user
 signOutUser.on('click', ()=>{
@@ -69,7 +64,7 @@ signOutUser.on('click', ()=>{
     console.log(errorMessage);
     // ...
   });
-})
+});
 
 //Event Listener Auth Stage
 firebase.auth().onAuthStateChanged(function(user) {
@@ -87,7 +82,6 @@ firebase.auth().onAuthStateChanged(function(user) {
   }
 });
 
-
 //Sign Social Sites Function
 function singInPopup(provider){
   firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -95,7 +89,9 @@ function singInPopup(provider){
     var token = result.credential.accessToken;
     // The signed-in user info.
     var user = result.user;
-    // ...
+    console.log(result);
+    console.log(token);
+    console.log(user);
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -104,6 +100,16 @@ function singInPopup(provider){
     var email = error.email;
     // The firebase.auth.AuthCredential type that was used.
     var credential = error.credential;
-    // ...
+    console.log(errorCode);
+    console.log(errorMessage);
+    console.log(email);
+    console.log(credential);
   });
-}
+};
+
+//Facebook Login
+authFacebook.on('click', () => {
+  var provider = new firebase.auth.FacebookAuthProvider();
+  // provider.addScope('user_gender');
+  singInPopup(provider)
+});
