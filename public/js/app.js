@@ -16,7 +16,7 @@ firebase.initializeApp(firebaseConfig);
 firebase.auth().useDeviceLanguage();
 
 // Initialize Database
-var database = firebase.database().ref('Usuarios');
+var userDatabase = firebase.database().ref('usuarios');
 
 // Initialize Storage
 var storage = firebase.app().storage("gs://jobdelas-62306.appspot.com");
