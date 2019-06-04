@@ -17,9 +17,14 @@ firebase.auth().useDeviceLanguage();
 
 // Initialize Database
 var userDatabase = firebase.database().ref('usuarios');
+var projectDatabase = firebase.database().ref('projetos');
+var achievementsDatabase = firebase.database().ref('achievements');
 
 // Initialize Storage
 var storage = firebase.app().storage("gs://jobdelas-62306.appspot.com");
+
+//User UID
+var uid;
 
 
 // Facebook API

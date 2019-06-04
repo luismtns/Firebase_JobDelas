@@ -1,7 +1,3 @@
-//Inputs
-var email = $('#emailAuthInput');
-var password = $('#passwordAuthInput');
-
 //Buttons
 var createUser = $('#createUser');
 var authUser = $('#authUser');
@@ -15,11 +11,14 @@ var displayName = $('#displayName');
 
 //create user instance
 createUser.on('click', ()=>{
+  var email = $('#emailAuthInput');
+  var password = $('#passwordAuthInput');
 
   firebase.auth().createUserWithEmailAndPassword(email.val(), password.val())
   .then(function(e) {
-    console.log(e);
+    console.log(e.user);
     alert('Bem Vindo ' + email.val());
+    addUserDatabase(e.user.uid, e.user.email);
   })
   .catch(function(error) {
     // Handle Errors here.
@@ -33,6 +32,8 @@ createUser.on('click', ()=>{
 
 //auth user instance
 authUser.on('click', ()=>{
+  var email = $('#emailAuthInput');
+  var password = $('#passwordAuthInput');
 
   firebase.auth().signInWithEmailAndPassword(email.val(), password.val())
   .then(function(e) {
@@ -69,7 +70,7 @@ signOutUser.on('click', ()=>{
 //Event Listener Auth Stage
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
-    console.log(user);
+    window.localStorage.setItem('uid',  user.uid);
     displayName.html(`Você está autenticado com o e-mail ${user.email}`);
     displayName.addClass('alert-success');
     displayName.removeClass('alert-danger');
