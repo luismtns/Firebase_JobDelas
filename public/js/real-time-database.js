@@ -1,3 +1,5 @@
+//Inputs
+
 
 //create instance of User in userDatabase
 $('#submitButton').on('click', () => {
@@ -11,7 +13,6 @@ $('#submitButton').on('click', () => {
 
 	//Inputs
 	var name = $('#nomeInput').val();
-	var email = $('#emailInput').val();
 	var sexo = $('#sexoInput').val();
 	var estrelas = $('#EstrelasInput').val();
 
@@ -29,19 +30,23 @@ $('#submitButton').on('click', () => {
 	var TituloConquistaInput = $('#TituloConquistaInput').val();
 	var ImagemConquistaInput = $('#ImagemConquistaInput').val();
 	var QuantidadeConquistaInput = $('#QuantidadeConquistaInput').val();
+
+	//Storage
+	var fotoPerfilInput = $('#fotoPerfilInput');
+	if($('#fotoPerfilInput').prop('files').length > 0){
+		var storageRef = storage.ref(`perfis/${uid}/profile_${uid}`);
+		var file = $('#fotoPerfilInput').prop('files')[0];
+		storageRef.put(file)
+	}
 	
+	//User DB
 	var userJson = {
-		"email": email,
-		"estrelas": estrelas,
 		"nome": name,
-		"profissao": {
-			"nome": nomeProfissao,
-			"sobre": sobreProfissao
-		},
-		"sexo": sexo
+		"sexo": sexo,
+		"foto": "profile_"+uid
 	}
 
-	firebase.database().ref('usuarios/' + uid).set(userJson, (error) => {
+	userDatabase.child(uid).set(userJson, (error) => {
 		if (error) {
 			alert("Erro ao atualizar dados \n"+ error);
 		} else {
@@ -50,32 +55,45 @@ $('#submitButton').on('click', () => {
 
 		}
 	});
+
+	// //Project DB
+	// var projectJson = {
+	// 	"email": email,
+	// 	"estrelas": estrelas,
+	// 	"nome": name,
+	// 	"profissao": {
+	// 		nomeProfissao: {
+	// 			"sobre": sobreProfissao
+	// 		}
+	// 	},
+	// 	"sexo": sexo,
+	// 	"foto": "profile_"+uid
+	// }
+
+	// projectDatabase.child(uid).set(projectJson);
+
+
 });
 
-function addUserDatabase(uid, email) {
-	if(!uid || !email){ return null}
-	var userJson = {
-			"email": email
-	}	
-	var userDatabaseRef = userDatabase.child(uid);
-	userDatabaseRef.set(userJson);
-};
 
 function verificarLogin() {
 	return new Promise(function name(resolve, reject) {
 		firebase.auth().onAuthStateChanged(function (user) {
 			if (user) {
 				resolve(user);
+				displayAlertUserStage(user);
 			} else {
 				// No user is signed in.
 				reject(false)
+				displayAlertUserStage(false);
 			}
 		});
 
 	})
 }
 verificarLogin().then((e)=>{
-	
+	displayAlertUserStage(e);
+
 	//create MyData from userDatabase
 	var myData = document.getElementById('personalData');
 	var userId = firebase.auth().currentUser.uid;
@@ -86,13 +104,44 @@ verificarLogin().then((e)=>{
 			<b>Email:</b> ${json.email}<br>
 			<b>Estrelas:</b> ${json.estrelas}<br>
 			<b>Nome:</b> ${json.nome}<br>
-			<b>Nome Profissão:</b> ${json.profissao.nome}<br>
-			<b>Sobre a Profissão:</b> ${json.profissao.sobre}<br>
-			<b>Sexo:</b> ${json.sexo}
+			<b>Sexo:</b> ${json.sexo}<br>
+			<b>Foto:</b> ${json.foto}
 		`;
 
 		myData.innerHTML = txt;
-		console.log(snapshot.val());
+
+
+		if(json.nome){
+			$('#nomeInput').val(json.nome);
+		}
+		if(json.sexo){
+			$('#sexoInput').val(json.sexo);
+		}
+		if(json.estrelas){
+			$('#EstrelasInput').val(json.estrelas);
+		}
+
+		if(json.foto){
+			storage.ref(`perfis/${userId}/profile_${userId}`).getDownloadURL().then(function(url) {
+				// `url` is the download URL for 'images/stars.jpg'
+			
+				// This can be downloaded directly:
+				var xhr = new XMLHttpRequest();
+				xhr.responseType = 'blob';
+				xhr.onload = function(event) {
+					var blob = xhr.response;
+				};
+				xhr.open('GET', url);
+				xhr.send();
+			
+				// Or inserted into an <img> element:
+				var img = document.getElementById('fotoPerfilImg');
+				img.src = url;
+			}).catch(function(error) {
+				// Handle any errors
+			});
+		}
+		// console.log(snapshot.val());
 	});
 
 	//create UserList from userDatabase
@@ -111,5 +160,6 @@ verificarLogin().then((e)=>{
 	    })
 	});
 
-
-}, (e)=>{console.log(e)});
+}, (e)=>{
+	console.log(e)//false
+});

@@ -18,7 +18,7 @@ firebase.auth().useDeviceLanguage();
 // Initialize Database
 var userDatabase = firebase.database().ref('usuarios');
 var projectDatabase = firebase.database().ref('projetos');
-var achievementsDatabase = firebase.database().ref('achievements');
+var achievementsDatabase = firebase.database().ref('conquistas');
 
 // Initialize Storage
 var storage = firebase.app().storage("gs://jobdelas-62306.appspot.com");

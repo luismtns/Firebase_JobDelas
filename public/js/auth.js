@@ -30,6 +30,15 @@ createUser.on('click', ()=>{
   });
 });
 
+function addUserDatabase(uid, email) {
+	if(!uid || !email){ return null}
+	var userJson = {
+			"email": email
+	}	
+	var userDatabaseRef = userDatabase.child(uid);
+	userDatabaseRef.set(userJson);
+};
+
 //auth user instance
 authUser.on('click', ()=>{
   var email = $('#emailAuthInput');
@@ -39,6 +48,7 @@ authUser.on('click', ()=>{
   .then(function(e) {
     console.log(e);    
     alert('Autenticado ' + email.val());
+    window.location.reload();
   })
   .catch(function(error) {
     // Handle Errors here.
@@ -56,6 +66,7 @@ signOutUser.on('click', ()=>{
   firebase.auth().signOut()
   .then(function(e) {
     alert('Deslogado');
+    window.location.reload();
   })
   .catch(function(error) {
     // Handle Errors here.
@@ -67,10 +78,8 @@ signOutUser.on('click', ()=>{
   });
 });
 
-//Event Listener Auth Stage
-firebase.auth().onAuthStateChanged(function(user) {
+function displayAlertUserStage(user){
   if (user) {
-    window.localStorage.setItem('uid',  user.uid);
     displayName.html(`Você está autenticado com o e-mail ${user.email}`);
     displayName.addClass('alert-success');
     displayName.removeClass('alert-danger');
@@ -81,7 +90,11 @@ firebase.auth().onAuthStateChanged(function(user) {
     displayName.addClass('alert-danger');
     displayName.removeClass('alert-sucess');
   }
-});
+}
+//Event Listener Auth Stage
+// firebase.auth().onAuthStateChanged(function(user) {
+  
+// });
 
 //Sign Social Sites Function
 function singInPopup(provider){
@@ -103,8 +116,8 @@ function singInPopup(provider){
     var credential = error.credential;
     console.log(errorCode);
     console.log(errorMessage);
-    console.log(email);
-    console.log(credential);
+    // console.log(email); //undefined
+    // console.log(credential); //undefined
   });
 };
 
