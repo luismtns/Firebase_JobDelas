@@ -1,5 +1,7 @@
 //Inputs
 
+//Dispalys
+var displayName = $('#displayName');
 
 //create instance of User in userDatabase
 $('#submitButton').on('click', () => {
@@ -32,7 +34,6 @@ $('#submitButton').on('click', () => {
 	var QuantidadeConquistaInput = $('#QuantidadeConquistaInput').val();
 
 	//Storage
-	var fotoPerfilInput = $('#fotoPerfilInput');
 	if($('#fotoPerfilInput').prop('files').length > 0){
 		var storageRef = storage.ref(`perfis/${uid}/profile_${uid}`);
 		var file = $('#fotoPerfilInput').prop('files')[0];
@@ -75,6 +76,19 @@ $('#submitButton').on('click', () => {
 
 });
 
+function displayAlertUserStage(user){
+  if (user) {
+    displayName.html(`Você está autenticado com o e-mail ${user.email}`);
+    displayName.addClass('alert-success');
+    displayName.removeClass('alert-danger');
+  } else {
+    // User is signed out.
+    console.log('signOut');
+    displayName.html('Você não esta autenticado.');
+    displayName.addClass('alert-danger');
+    displayName.removeClass('alert-sucess');
+  }
+}
 
 function verificarLogin() {
 	return new Promise(function name(resolve, reject) {
@@ -84,13 +98,15 @@ function verificarLogin() {
 				displayAlertUserStage(user);
 			} else {
 				// No user is signed in.
-				reject(false)
+				reject(false);
 				displayAlertUserStage(false);
+				window.location.href = "./index.html"
 			}
 		});
 
 	})
 }
+
 verificarLogin().then((e)=>{
 	displayAlertUserStage(e);
 
@@ -137,9 +153,16 @@ verificarLogin().then((e)=>{
 				// Or inserted into an <img> element:
 				var img = document.getElementById('fotoPerfilImg');
 				img.src = url;
+				$("#fotoPerfilImg").removeClass('hidden');
+				$("#divFotoPerfil").addClass('hidden');
 			}).catch(function(error) {
+				$("#fotoPerfilImg").addClass('hidden');
+				$("#divFotoPerfil").removeClass('hidden');
 				// Handle any errors
 			});
+		}else{
+			$("#fotoPerfilImg").addClass('hidden');
+			$("#divFotoPerfil").removeClass('hidden');
 		}
 		// console.log(snapshot.val());
 	});
@@ -162,4 +185,22 @@ verificarLogin().then((e)=>{
 
 }, (e)=>{
 	console.log(e)//false
+});
+
+//logout user
+$('#signOutUser').on('click', ()=>{
+
+  firebase.auth().signOut()
+  .then(function(e) {
+    alert('Deslogado');
+    window.location.reload();
+  })
+  .catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorCode);
+    console.log(errorMessage);
+    // ...
+  });
 });

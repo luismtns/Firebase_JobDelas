@@ -1,12 +1,9 @@
 //Buttons
 var createUser = $('#createUser');
 var authUser = $('#authUser');
-var signOutUser = $('#signOutUser');
 
 var authFacebook = $('#authFacebook');
 
-//Dispalys
-var displayName = $('#displayName');
 
 
 //create user instance
@@ -60,41 +57,12 @@ authUser.on('click', ()=>{
   });
 });
 
-//auth logout user
-signOutUser.on('click', ()=>{
-
-  firebase.auth().signOut()
-  .then(function(e) {
-    alert('Deslogado');
-    window.location.reload();
-  })
-  .catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    console.log(errorCode);
-    console.log(errorMessage);
-    // ...
-  });
-});
-
-function displayAlertUserStage(user){
-  if (user) {
-    displayName.html(`Você está autenticado com o e-mail ${user.email}`);
-    displayName.addClass('alert-success');
-    displayName.removeClass('alert-danger');
-  } else {
-    // User is signed out.
-    console.log('signOut');
-    displayName.html('Você não esta autenticado.');
-    displayName.addClass('alert-danger');
-    displayName.removeClass('alert-sucess');
+// Event Listener Auth Stage
+firebase.auth().onAuthStateChanged(function(user) {
+  if(user){
+    window.location.href = "./profile.html"
   }
-}
-//Event Listener Auth Stage
-// firebase.auth().onAuthStateChanged(function(user) {
-  
-// });
+});
 
 //Sign Social Sites Function
 function singInPopup(provider){
