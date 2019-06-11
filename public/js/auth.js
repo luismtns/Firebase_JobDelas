@@ -13,9 +13,10 @@ createUser.on('click', ()=>{
 
   firebase.auth().createUserWithEmailAndPassword(email.val(), password.val())
   .then(function(e) {
-    console.log(e.user);
-    alert('Bem Vindo ' + email.val());
-    addUserDatabase(e.user.uid, e.user.email);
+    setUserEmailByUid(e.user.uid, e.user.email).then(()=>{
+      console.log(e.user);
+      alert('Bem Vindo ' + e.user.email);
+    });
   })
   .catch(function(error) {
     // Handle Errors here.
@@ -27,14 +28,23 @@ createUser.on('click', ()=>{
   });
 });
 
-function addUserDatabase(uid, email) {
-	if(!uid || !email){ return null}
-	var userJson = {
-			"email": email
-	}	
-	var userDatabaseRef = userDatabase.child(uid);
-	userDatabaseRef.set(userJson);
-};
+//Set User user in DB 
+function setUserEmailByUid(uid, email) {
+	return new Promise(function name(resolve, reject) {
+		firebase.database().ref('usuarios').child(uid).set({
+      "email": email
+    }, (error) => {
+			if (error) {
+				reject(error);
+			} else {
+				// Data saved successfully!
+				resolve();
+			}
+		});
+
+	})
+}
+
 
 //auth user instance
 authUser.on('click', ()=>{
@@ -71,9 +81,11 @@ function singInPopup(provider){
     var token = result.credential.accessToken;
     // The signed-in user info.
     var user = result.user;
-    console.log(result);
-    console.log(token);
-    console.log(user);
+    var uid = user.uid;
+    var email = user.email;
+    setUserEmailByUid(uid, email).then(()=>{
+      alert('Bem Vindo ' + email);
+    });
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;

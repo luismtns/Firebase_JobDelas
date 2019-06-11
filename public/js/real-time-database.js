@@ -17,6 +17,7 @@ $('#submitButton').on('click', () => {
 	var name = $('#nomeInput').val();
 	var sexo = $('#sexoInput').val();
 	var estrelas = $('#EstrelasInput').val();
+	var cep = $('#cepInput').val();
 
 	var nomeProfissao = $('#nomeProfissaoInput').val();
 	var sobreProfissao = $('#sobreProfissaoInput').val();
@@ -39,7 +40,7 @@ $('#submitButton').on('click', () => {
 		var file = $('#fotoPerfilInput').prop('files')[0];
 		storageRef.put(file)
 	}
-	
+
 	//User DB
 	var userJson = {
 		"nome": name,
@@ -47,34 +48,59 @@ $('#submitButton').on('click', () => {
 		"foto": "profile_"+uid
 	}
 
-	userDatabase.child(uid).set(userJson, (error) => {
-		if (error) {
-			alert("Erro ao atualizar dados \n"+ error);
-		} else {
-			// Data saved successfully!
-			alert("Dados atualizados com sucesso!");
-
-		}
-	});
-
-	// //Project DB
-	// var projectJson = {
-	// 	"email": email,
-	// 	"estrelas": estrelas,
-	// 	"nome": name,
-	// 	"profissao": {
-	// 		nomeProfissao: {
-	// 			"sobre": sobreProfissao
-	// 		}
-	// 	},
-	// 	"sexo": sexo,
-	// 	"foto": "profile_"+uid
-	// }
-
-	// projectDatabase.child(uid).set(projectJson);
-
-
+	//Increment CEP
+	if(cep.length > 7){
+		getCEP(cep).then((e)=>{
+			userJson.endereco = {
+				"cep": cep,
+				"bairro": e.bairro,
+				"logradouro": e.logradouro,
+				"estado": e.uf,
+				"cidade": e.localidade
+			};
+		})
+	}
+	console.log(userJson);
+	
+	updateUserByUid(uid, userJson).then(()=>{
+		alert('Dados Atualizados com Sucesso!');
+		// window.location.reload();
+	}, (e)=>{
+		alert('Falha ao atualizar dados');
+		// window.location.reload();
+	})
 });
+
+//Update User in DB 
+function updateUserByUid(uid, data) {
+	return new Promise(function name(resolve, reject) {
+
+		firebase.database().ref('usuarios').child(uid).update(data, (error) => {
+			if (error) {
+				reject(error);
+			} else {
+				// Data saved successfully!
+				resolve();
+			}
+		});
+
+	})
+}
+//Set User andress in DB 
+function updateAndressUserByUid(uid, data) {
+	return new Promise(function name(resolve, reject) {
+
+		firebase.database().ref('usuarios').ref('endereco').child(uid).set(data, (error) => {
+			if (error) {
+				reject(error);
+			} else {
+				// Data saved successfully!
+				resolve();
+			}
+		});
+
+	})
+}
 
 function displayAlertUserStage(user){
   if (user) {
@@ -90,7 +116,7 @@ function displayAlertUserStage(user){
   }
 }
 
-function verificarLogin() {
+function userAuth() {
 	return new Promise(function name(resolve, reject) {
 		firebase.auth().onAuthStateChanged(function (user) {
 			if (user) {
@@ -104,61 +130,63 @@ function verificarLogin() {
 			}
 		});
 
-	})
+	});
 }
 
-verificarLogin().then((e)=>{
+//Get Profile Photo By UID
+function getProfilePhoto(uid) {
+	return new Promise(function name(resolve, reject) {
+		storage.ref(`perfis/${uid}/profile_${uid}`).getDownloadURL().then(function(url) {
+			// `url` is the download URL for 'images/stars.jpg'
+		
+			// This can be downloaded directly:
+			var xhr = new XMLHttpRequest();
+			xhr.responseType = 'blob';
+			xhr.onload = function(event) {
+				var blob = xhr.response;
+			};
+			xhr.open('GET', url);
+			xhr.send();
+			resolve(url);
+		}).catch(function(error) {
+			reject(error);
+			// Handle any errors
+		});
+
+	})
+};
+
+userAuth().then((e)=>{
 	displayAlertUserStage(e);
 
 	//create MyData from userDatabase
-	var myData = document.getElementById('personalData');
 	var userId = firebase.auth().currentUser.uid;
 	userDatabase.child(userId).once('value').then(function(snapshot) {
-		myData.innerHTML = '';
-		var json = snapshot.val();
-		var txt = `
-			<b>Email:</b> ${json.email}<br>
-			<b>Estrelas:</b> ${json.estrelas}<br>
-			<b>Nome:</b> ${json.nome}<br>
-			<b>Sexo:</b> ${json.sexo}<br>
-			<b>Foto:</b> ${json.foto}
-		`;
-
-		myData.innerHTML = txt;
-
-
-		if(json.nome){
-			$('#nomeInput').val(json.nome);
+	
+		var data = snapshot.val();
+		if(!data){
+			return alert('Preencha seus dados!')
 		}
-		if(json.sexo){
-			$('#sexoInput').val(json.sexo);
+		//Debug
+		$('#userDebug').val(JSON.stringify(data));
+		if(data.nome){
+			$('#nomeInput').val(data.nome);
 		}
-		if(json.estrelas){
-			$('#EstrelasInput').val(json.estrelas);
+		if(data.sexo){
+			$('#sexoInput').val(data.sexo);
 		}
-
-		if(json.foto){
-			storage.ref(`perfis/${userId}/profile_${userId}`).getDownloadURL().then(function(url) {
-				// `url` is the download URL for 'images/stars.jpg'
-			
-				// This can be downloaded directly:
-				var xhr = new XMLHttpRequest();
-				xhr.responseType = 'blob';
-				xhr.onload = function(event) {
-					var blob = xhr.response;
-				};
-				xhr.open('GET', url);
-				xhr.send();
-			
-				// Or inserted into an <img> element:
-				var img = document.getElementById('fotoPerfilImg');
-				img.src = url;
+		if(data.estrelas){
+			$('#EstrelasInput').val(data.estrelas);
+		}
+	
+		if(data.foto){
+			getProfilePhoto(userId).then((url)=>{
+				$('#fotoPerfilImg').prop('src', url);
 				$("#fotoPerfilImg").removeClass('hidden');
-				$("#divFotoPerfil").addClass('hidden');
-			}).catch(function(error) {
+			}).catch((e)=>{
+				console.log(e);
 				$("#fotoPerfilImg").addClass('hidden');
 				$("#divFotoPerfil").removeClass('hidden');
-				// Handle any errors
 			});
 		}else{
 			$("#fotoPerfilImg").addClass('hidden');
@@ -166,25 +194,25 @@ verificarLogin().then((e)=>{
 		}
 		// console.log(snapshot.val());
 	});
-
-	//create UserList from userDatabase
-	var userList = document.getElementById('userList');
-	userDatabase.on('value', function(snapshot) {
-	    userList.innerHTML = '';
-	    snapshot.forEach( (item) => {
-				var json = item.val();
-				var txt = `
-					Email: ${json.email}
-				`;
-
-				let li = document.createElement('li');
-				li.appendChild(document.createTextNode(txt));
-				userList.appendChild(li);
-	    })
-	});
-
 }, (e)=>{
 	console.log(e)//false
+});
+
+
+//create UserList from userDatabase
+var userList = document.getElementById('userList');
+userDatabase.on('value', function(snapshot) {
+		userList.innerHTML = '';
+		snapshot.forEach( (item) => {
+			var data = item.val();
+			var txt = `
+				User JSON: ${JSON.stringify(data)}
+			`;
+
+			let li = document.createElement('li');
+			li.appendChild(document.createTextNode(txt));
+			userList.appendChild(li);
+		})
 });
 
 //logout user
@@ -204,3 +232,20 @@ $('#signOutUser').on('click', ()=>{
     // ...
   });
 });
+
+
+//Get CEP
+
+function getCEP(cep){
+	return new Promise(function name(resolve, reject) {
+		
+		$.getJSON('https://viacep.com.br/ws/' + cep +'/json/')
+			.done((data) =>{
+				resolve(data)
+			})
+			.fail((erro) =>{
+				reject(erro);
+			})
+
+	});
+}

@@ -9,6 +9,7 @@
 	<link rel="shortcut icon" href="favicon.ico">
 
 	<link rel="stylesheet" href="https://bootswatch.com/4/minty/bootstrap.css">
+	<link rel="stylesheet" href="css/fontawesome.min.css">
 	<link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -35,13 +36,13 @@
 		</div>
 		<div class="row">
 			<div class="col-6 col-md-3">
-				<div id="divFotoPerfil" class="form-group hidden">
+				<div id="divFotoPerfil" class="form-group">
 					<label for="fotoPerfilInput">Foto de Perfil</label>
 					<input type="file" id="fotoPerfilInput" class="form-control" accept=".png,.jpg,.jpeg">
 				</div>
-				<img class="img-thumbnail hidden" id="fotoPerfilImg" src="" alt="Profile Image" >
+				<img class="img-thumbnail" id="fotoPerfilImg" src="css/firebaseload.gif" alt="Profile Image" >
 			</div>
-			<div class="col-12 col-md-6">
+			<div class="col-12 col-md-9">
 				<div class="form-group">
 					<label for="nomeInput">Nome</label>
 					<input type="text" id="nomeInput" placeholder="Nome" class="form-control">
@@ -57,6 +58,19 @@
 				<div class="form-group">
 					<label for="EstrelasInput">Estrelas</label>
 					<input type="number" min="1" max="5" id="EstrelasInput" placeholder="Número de Estrelas" class="form-control">
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 mt-2">
+				<h5>Endereço</h5>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 col-md-4">
+				<div class="form-group">
+					<label for="cepInput">CEP</label>
+					<input type="text" id="cepInput" placeholder="00.000-00" class="form-control">
 				</div>
 			</div>
 		</div>
@@ -116,11 +130,9 @@
 		</div>
 		<div class="row">
 			<div class="col-12 mt-5">
-				<h3>Minhas Informações</h3>
-				<p id="personalData">
-					<img src="css/firebaseload.gif" style="max-width: 230px;display: block;margin: 0 auto;" class="img-fluid"
-						alt="Loader">
-				</p>
+				<h3>User Debug</h3>
+				<textarea class="form-control" rows="4" id="userDebug">
+				</textarea>
 			</div>
 		</div>
 		<div class="row">
@@ -130,26 +142,6 @@
 					<img src="css/firebaseload.gif" style="max-width: 230px;display: block;margin: 0 auto;" class="img-fluid"
 						alt="Loader">
 				</ul>
-			</div>
-		</div>
-		<!-- Storage js -->
-		<div id="Storage" class="row">
-			<div class="col-12 mt-2">
-				<h3>Storage</h3>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-12">
-				<div class="form-group">
-						<progress value="0" max="100" id="uploader"></progress>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-12">
-				<div class="form-group">
-					<input type="file" id="fileButton">
-				</div>
 			</div>
 		</div>
 		<div class="row">

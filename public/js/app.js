@@ -23,9 +23,6 @@ var achievementsDatabase = firebase.database().ref('conquistas');
 // Initialize Storage
 var storage = firebase.app().storage("gs://jobdelas-62306.appspot.com");
 
-//User UID
-var uid;
-
 
 // Facebook API
 window.fbAsyncInit = function() {
